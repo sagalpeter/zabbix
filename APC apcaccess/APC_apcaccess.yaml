@@ -1,0 +1,343 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-10-09T19:37:17Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 2d06f4fa5a264d3987b4d62b9d0637dd
+      template: 'APC apcaccess'
+      name: 'APC apcaccess'
+      description: 'Simple apcaccess parsing'
+      groups:
+        - name: Templates
+      items:
+        - uuid: 0b69798dc9ab49058738df127bd0dcdd
+          name: apcaccess
+          key: apcupsd.access
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 82fc0d1f5402478baa72bee5b671b37a
+          name: 'UPS Battery voltage'
+          type: DEPENDENT
+          key: 'apcupsd[BATTV]'
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'BATTV(\s+):\s(.*)\sVolts'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: e8e678763a0f43bb98b447b56357e1a9
+          name: 'UPS Battery charge'
+          type: DEPENDENT
+          key: 'apcupsd[BCHARGE]'
+          delay: '0'
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'BCHARGE(\s+):\s(.*)\sPercent'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: a71a5672a66a40c0870561346f3b0a97
+          name: 'UPS Transition voltage (high)'
+          type: DEPENDENT
+          key: 'apcupsd[HITRANS]'
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'HITRANS(\s+):\s(.*)\sVolts'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 34db3e6bee314733aa2418b024423ace
+          name: 'UPS Internal temperature'
+          type: DEPENDENT
+          key: 'apcupsd[ITEMP]'
+          delay: '0'
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'ITEMP(\s+):\s(.*)\sC'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 2933e5b7da1545058e79865911a9efac
+          name: 'UPS Line frequency'
+          type: DEPENDENT
+          key: 'apcupsd[LINEFREQ]'
+          delay: '0'
+          value_type: FLOAT
+          units: Hz
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'LINEFREQ(\s+):\s(.*)\sHz'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: dfe5edaf845d453685c68d7cad0694c2
+          name: 'UPS Line voltage'
+          type: DEPENDENT
+          key: 'apcupsd[LINEV]'
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'LINEV(\s+):\s(.*)\sVolts'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: f1719ba96924403c9d21f62f55ea8ce7
+          name: 'UPS Load'
+          type: DEPENDENT
+          key: 'apcupsd[LOADPCT]'
+          delay: '0'
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'LOADPCT(\s+):\s(.*)\sPercent'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 6db332288676429085a426075c038447
+          name: 'UPS Transition voltage (low)'
+          type: DEPENDENT
+          key: 'apcupsd[LOTRANS]'
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'LOTRANS(\s+):\s(.*)\sVolts'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 85f1fb6ce0b54630b05f09e77b161cbe
+          name: 'UPS Maximum running time'
+          type: DEPENDENT
+          key: 'apcupsd[MAXTIME]'
+          delay: '0'
+          units: sec
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'MAXTIME(\s+):\s(.*)\sSeconds'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 899554b9f8a947638647b2b0a38adb08
+          name: 'UPS Minimum battery charge'
+          type: DEPENDENT
+          key: 'apcupsd[MBATTCHG]'
+          delay: '0'
+          units: '%'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'MBATTCHG(\s+):\s(.*)\sPercent'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 9a973c9e8b3845859a849a096963b9fe
+          name: 'UPS Minimum time left'
+          type: DEPENDENT
+          key: 'apcupsd[MINTIMEL]'
+          delay: '0'
+          units: min
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'MINTIMEL(\s+):\s(.*)\sMinutes'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: d27423e8bcff428184235cfc8f47cd8e
+          name: 'UPS Output voltage'
+          type: DEPENDENT
+          key: 'apcupsd[OUTPUTV]'
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'OUTPUTV(\s+):\s(.*)\sVolts'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+        - uuid: 105b6d64cf8849259e4163d357678cc7
+          name: 'UPS status'
+          type: DEPENDENT
+          key: 'apcupsd[STATUS]'
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'STATUS(\s+):\s(.*)'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+          triggers:
+            - uuid: 88a3f8986e70482aaede84aca4461336
+              expression: 'find(/APC apcaccess/apcupsd[STATUS],,"regexp","ONLINE")=0'
+              name: 'UPS status not ONLINE'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: ee852438e6994708a5fb33de163523e8
+              expression: 'find(/APC apcaccess/apcupsd[STATUS],,"regexp","REPLACEBATT")=1'
+              name: 'UPS status REPLACEBATT'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: c2e8e8823c924eb2a05a75432e0e08c5
+          name: 'UPS Time left'
+          type: DEPENDENT
+          key: 'apcupsd[TIMELEFT]'
+          delay: '0'
+          value_type: FLOAT
+          units: min
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'TIMELEFT(\s+):\s(.*)\sMinutes'
+                - \2
+              error_handler: CUSTOM_ERROR
+              error_handler_params: 'Not supported'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DISCARD.SECONDS}'
+          master_item:
+            key: apcupsd.access
+          tags:
+            - tag: Application
+              value: 'Apcupsd monitoring'
+      macros:
+        - macro: '{$DISCARD.SECONDS}'
+          value: '1800'
+          description: 'preprocessing - discard same values with heartbeat'
