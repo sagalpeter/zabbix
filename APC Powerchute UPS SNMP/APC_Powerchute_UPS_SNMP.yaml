@@ -1,0 +1,217 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-10-09T16:54:19Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 49b11aeed91e4c788d90fb305a473c3a
+      template: 'APC Powerchute UPS SNMP'
+      name: 'APC Powerchute UPS SNMP'
+      description: 'Monitoring of PowerChute managed UPSes'
+      groups:
+        - name: Templates
+      discovery_rules:
+        - uuid: cda6033e27214835b17dac1cedcb07c2
+          name: 'APC Powerchute'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#MODEL},PowerNet-MIB::upsBasicIdentModel,{#SN},PowerNet-MIB::upsAdvIdentSerialNumber]'
+          key: apcups_discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: c4b67eb0e3014111a992500a2ccb88c2
+              name: '{#MODEL} {#SN} Battery voltage'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvBatteryActualVoltage.{#SNMPINDEX}'
+              key: 'upsAdvBatteryActualVoltage[{#SNMPINDEX}]'
+              units: V
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 88d800ea95064110892679e27732e3d3
+              name: '{#MODEL} {#SN} Battery charge'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvBatteryCapacity.{#SNMPINDEX}'
+              key: 'upsAdvBatteryCapacity[{#SNMPINDEX}]'
+              units: '%'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 78c908e35ed54bfb836faae4d71821a9
+              name: '{#MODEL} {#SN} Battery replace indicator'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvBatteryReplaceIndicator.{#SNMPINDEX}'
+              key: 'upsAdvBatteryReplaceIndicator[{#SNMPINDEX}]'
+              valuemap:
+                name: upsAdvBatteryReplaceIndicator
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 126afc0d6d9747fb8be90ccd9f720e9b
+              name: '{#MODEL} {#SN} Battery run time remaining'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvBatteryRunTimeRemaining.{#SNMPINDEX}'
+              key: 'upsAdvBatteryRunTimeRemaining[{#SNMPINDEX}]'
+              units: s
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.01'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 3fe7d1f9f28d49169e00de049a48232b
+              name: '{#MODEL} {#SN} Battery temperature'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvBatteryTemperature.{#SNMPINDEX}'
+              key: 'upsAdvBatteryTemperature[{#SNMPINDEX}]'
+              units: °C
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 5d419f60dd204e49a14e49783527e6a8
+              name: '{#MODEL} {#SN} Input line frequency'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvInputFrequency.{#SNMPINDEX}'
+              key: 'upsAdvInputFrequency[{#SNMPINDEX}]'
+              units: Hz
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 7dade749052549b7b7c81250b89c07e2
+              name: '{#MODEL} {#SN} Input line voltage'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvInputLineVoltage.{#SNMPINDEX}'
+              key: 'upsAdvInputLineVoltage[{#SNMPINDEX}]'
+              units: V
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 555f74b89586432ca55cec0d66ff26ed
+              name: '{#MODEL} {#SN} Output load'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsAdvOutputLoad.{#SNMPINDEX}'
+              key: 'upsAdvOutputLoad[{#SNMPINDEX}]'
+              units: '%'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 25469da7812e4ae6a7fbd5adb27e96e2
+              name: '{#MODEL} {#SN} Battery status'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsBasicBatteryStatus.{#SNMPINDEX}'
+              key: 'upsBasicBatteryStatus[{#SNMPINDEX}]'
+              valuemap:
+                name: upsBasicBatteryStatus
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+            - uuid: 0feb236a86a54604bc3747c4d01e6376
+              name: '{#MODEL} {#SN} Output status'
+              type: SNMP_AGENT
+              snmp_oid: 'PowerNet-MIB::upsBasicOutputStatus.{#SNMPINDEX}'
+              key: 'upsBasicOutputStatus[{#SNMPINDEX}]'
+              valuemap:
+                name: upsBasicOutputStatus
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              tags:
+                - tag: Application
+                  value: 'APC PowerChute UPS'
+                - tag: Application
+                  value: 'APC UPS {#MODEL} {#SN}'
+              trigger_prototypes:
+                - uuid: 0ef1ca81d5654a5aa467c5c2ecb9d579
+                  expression: 'last(/APC Powerchute UPS SNMP/upsBasicOutputStatus[{#SNMPINDEX}])<>2'
+                  name: '{#MODEL} {#SN} Output status not onLine'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+      valuemaps:
+        - uuid: d989e82782744cceaa8cd63f53c957f2
+          name: upsAdvBatteryReplaceIndicator
+          mappings:
+            - value: '1'
+              newvalue: noBatteryNeedsReplacing
+            - value: '2'
+              newvalue: batteryNeedsReplacing
+        - uuid: acca7d62fb454d34a5f2562ad1653e46
+          name: upsBasicBatteryStatus
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: batteryNormal
+            - value: '3'
+              newvalue: batteryLow
+            - value: '4'
+              newvalue: batteryInFaultCondition
+        - uuid: d6146909761d4f1eae2c90fd910b483a
+          name: upsBasicOutputStatus
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: onLine
+            - value: '3'
+              newvalue: onBattery
+            - value: '7'
+              newvalue: 'off'
+            - value: '10'
+              newvalue: hardwareFailureBypass
+            - value: '15'
+              newvalue: onBatteryTest
