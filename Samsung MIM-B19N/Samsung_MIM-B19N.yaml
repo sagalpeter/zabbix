@@ -1,0 +1,471 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-10-09T10:21:46Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 066c4fee7b4a40ab999ab0a856ef83e1
+      template: 'Samsung MIM-B19N'
+      name: 'Samsung MIM-B19N'
+      description: 'Template for monitoring Samsung AC units via modbus interface MIM-B19N.'
+      groups:
+        - name: Templates
+      items:
+        - uuid: e34d7588904249b8a5b7e05a8a85a271
+          name: 'AC MIM-B19N Outdoor defrost operation'
+          type: DEPENDENT
+          key: mimb19n.global.defrost
+          delay: '0'
+          valuemap:
+            name: 'Defrost state'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[2]'
+            - type: STR_REPLACE
+              parameters:
+                - '255'
+                - '0'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          master_item:
+            key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,0,4]'
+          tags:
+            - tag: Application
+              value: 'AC global'
+            - tag: Application
+              value: 'Samsung MIM-B19N'
+          triggers:
+            - uuid: 37d0e8b85398445a9db8eda816d066a2
+              expression: 'last(/Samsung MIM-B19N/mimb19n.global.defrost)<>0'
+              name: 'AC MIM-B19N Outdoor defrost active'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: 70dbc7a999e54dcda3f9bc68c6c81f96
+          name: 'AC MIM-B19N Modbus interface module error status'
+          type: DEPENDENT
+          key: mimb19n.global.interface_state
+          delay: '0'
+          valuemap:
+            name: 'Interface error status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0]'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          master_item:
+            key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,0,4]'
+          tags:
+            - tag: Application
+              value: 'AC global'
+            - tag: Application
+              value: 'Samsung MIM-B19N'
+          triggers:
+            - uuid: 3232611c71e14b0cba7bf09787c07abd
+              expression: 'last(/Samsung MIM-B19N/mimb19n.global.interface_state)<>0'
+              name: 'AC MIM-B19N Modbus interface module error'
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: b2b16326a85c4c67ae418b940e243528
+          name: 'AC MIM-B19N Integrated outdoor unit error code'
+          type: DEPENDENT
+          key: mimb19n.global.outdoor_unit_state
+          delay: '0'
+          description: |
+            0: No error
+            100 to 999: Error code
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[1]'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          master_item:
+            key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,0,4]'
+          tags:
+            - tag: Application
+              value: 'AC global'
+            - tag: Application
+              value: 'Samsung MIM-B19N'
+          triggers:
+            - uuid: 4e94c8304f3c44509705c90246eb636c
+              expression: 'last(/Samsung MIM-B19N/mimb19n.global.outdoor_unit_state)<>0'
+              name: 'AC MIM-B19N Integrated outdoor unit error'
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: a6cd492546b340a4a777623b5afc8f19
+          name: 'AC global'
+          type: ZABBIX_ACTIVE
+          key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,0,4]'
+          history: '0'
+          trends: '0'
+          value_type: CHAR
+          tags:
+            - tag: Application
+              value: 'AC global'
+            - tag: Application
+              value: 'Samsung MIM-B19N'
+      discovery_rules:
+        - uuid: 9addc654adf74ac5b4e329e177b2e343
+          name: 'AC unit'
+          type: SCRIPT
+          key: ac_discovery_from_macros
+          params: |
+            const registers = {$MODBUS_REGISTERS};
+            var text = '[';
+            
+            for (var i = 0; i < registers.length; i++) {
+              text += '{ "{#REGISTER}" : ' + registers[i] + '}';
+              if (i + 1 < registers.length) {
+                text += ",";
+              }
+            }
+            text+="]";
+            
+            return text
+          item_prototypes:
+            - uuid: 281d9a38cd0e47d8b16702c74719a4dc
+              name: 'AC [{#REGISTER}] 360 air flow direction'
+              type: DEPENDENT
+              key: 'mimb19n.unit.360_airflow[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: '360 airflow'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[31]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 13ae15edaf714b999f64cccec52f2b18
+              name: 'AC [{#REGISTER}] ambient temperature'
+              type: DEPENDENT
+              key: 'mimb19n.unit.ambient_temp[{#REGISTER}]'
+              delay: '0'
+              value_type: FLOAT
+              units: °C
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[9]'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.1'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 9b7431cdd48e429ab97c212752703d7a
+              name: 'AC [{#REGISTER}] indoor unit error code'
+              type: DEPENDENT
+              key: 'mimb19n.unit.errcode[{#REGISTER}]'
+              delay: '0'
+              description: |
+                0: No Error
+                100-999: Error Code
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[13]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+              trigger_prototypes:
+                - uuid: 0ed254f059044c27af2ecd1a3b9658db
+                  expression: 'last(/Samsung MIM-B19N/mimb19n.unit.errcode[{#REGISTER}])<>0'
+                  name: 'AC [{#REGISTER}] indoor unit error'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+            - uuid: 38a85e94beda4fff9f9e78f62f25e0db
+              name: 'AC [{#REGISTER}] fan speed'
+              type: DEPENDENT
+              key: 'mimb19n.unit.fanspeed[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: 'FAN speed'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[4]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 7348f81fff614fe68aab2fd0fd8f226d
+              name: 'AC [{#REGISTER}] filter-cleaning reminder'
+              type: DEPENDENT
+              key: 'mimb19n.unit.filter_alarm[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: 'AC state'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[6]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 89816f43c3da44919ad6d76e875892b3
+              name: 'AC [{#REGISTER}] mode'
+              type: DEPENDENT
+              key: 'mimb19n.unit.mode[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: 'AC mode'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[3]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 99c10873acd54e6aab4ee6bb89ec6036
+              name: 'AC [{#REGISTER}] restrictions on the remote control'
+              type: DEPENDENT
+              key: 'mimb19n.unit.restriction[{#REGISTER}]'
+              delay: '0'
+              description: |
+                0x0000: No Restriction
+                Others: Restriction
+              valuemap:
+                name: 'Defrost state'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[14]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 0baa9f85811049d999cd66a5ad950e75
+              name: 'AC [{#REGISTER}] set temperature'
+              type: DEPENDENT
+              key: 'mimb19n.unit.set_temp[{#REGISTER}]'
+              delay: '0'
+              value_type: FLOAT
+              units: °C
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[8]'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.1'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 0b0cee83bcc141d9900552fb22ed605b
+              name: 'AC [{#REGISTER}] running state'
+              type: DEPENDENT
+              key: 'mimb19n.unit.state[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: 'AC state'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[2]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 3c2564fbed3b48fdb5840fe435e9ca95
+              name: 'AC [{#REGISTER}] vertical air flow'
+              type: DEPENDENT
+              key: 'mimb19n.unit.vertical_airflow[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: 'AC state'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[5]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: 1438caf6adc1442a9860503749ca27e1
+              name: 'AC [{#REGISTER}] windfree state'
+              type: DEPENDENT
+              key: 'mimb19n.unit.windfree_state[{#REGISTER}]'
+              delay: '0'
+              valuemap:
+                name: Windfree
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[30]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '3600'
+              master_item:
+                key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+            - uuid: cbe0bbeb7ece49b3ab4dc727314b2c6e
+              name: 'AC device {#REGISTER}'
+              type: ZABBIX_ACTIVE
+              key: 'modbus.get[{$MODBUS_URL},{$MODBUS_ADDRESS},4,{#REGISTER},32]'
+              history: '0'
+              trends: '0'
+              value_type: CHAR
+              tags:
+                - tag: Application
+                  value: 'AC unit {#REGISTER}'
+                - tag: Application
+                  value: 'Samsung MIM-B19N'
+      macros:
+        - macro: '{$MODBUS_ADDRESS}'
+          value: '1'
+          description: 'modbus address of mim-b9n'
+        - macro: '{$MODBUS_REGISTERS}'
+          value: '[50]'
+          description: 'list of "first" registers per internal unit (JSON [a,b,c])'
+        - macro: '{$MODBUS_URL}'
+          value: 'tcp://localhost:502'
+          description: 'URL of modbus gateway (tcp)'
+      valuemaps:
+        - uuid: c45cf438ddb541ad907feae60c2d3a5e
+          name: '360 airflow'
+          mappings:
+            - value: '106'
+              newvalue: Spot
+            - value: '85'
+              newvalue: Mid
+            - value: '64'
+              newvalue: Wide
+            - value: '15'
+              newvalue: Swing
+            - type: DEFAULT
+              newvalue: Individual
+        - uuid: b36cb598ff7547e484002458c6047fe0
+          name: 'AC mode'
+          mappings:
+            - value: '0'
+              newvalue: Auto
+            - value: '1'
+              newvalue: Cool
+            - value: '2'
+              newvalue: Dry
+            - value: '3'
+              newvalue: Fan
+            - value: '4'
+              newvalue: Heat
+        - uuid: 36d381dcd6424d978aaaddecc4f41e8f
+          name: 'AC state'
+          mappings:
+            - value: '0'
+              newvalue: 'Off'
+            - value: '1'
+              newvalue: 'On'
+        - uuid: 771e6247a4f847d48983f2aee0f5d379
+          name: 'Defrost state'
+          mappings:
+            - value: '0'
+              newvalue: 'Off'
+            - type: GREATER_OR_EQUAL
+              value: '1'
+              newvalue: 'On'
+        - uuid: 7aa0b1493d8449afbf66f0eb2a7dd16a
+          name: 'FAN speed'
+          mappings:
+            - value: '0'
+              newvalue: Auto
+            - value: '1'
+              newvalue: Low
+            - value: '2'
+              newvalue: Middle
+            - value: '3'
+              newvalue: High
+        - uuid: f088727ef6514d9980efe94ffc2122f2
+          name: 'Interface error status'
+          mappings:
+            - value: '1'
+              newvalue: 'Address error'
+            - value: '2'
+              newvalue: 'Communication error on R1/R2'
+            - value: '4'
+              newvalue: 'Tracking error'
+            - value: '0'
+              newvalue: 'No error'
+        - uuid: 59939bd7f121440b833b639b866b861c
+          name: Windfree
+          mappings:
+            - value: '0'
+              newvalue: 'Off'
+            - value: '9'
+              newvalue: 'On'
