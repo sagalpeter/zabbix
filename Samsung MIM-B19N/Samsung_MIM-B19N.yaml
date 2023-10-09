@@ -397,7 +397,7 @@ zabbix_export:
           description: 'list of "first" registers per internal unit (JSON [a,b,c])'
         - macro: '{$MODBUS_URL}'
           value: 'tcp://localhost:502'
-          description: 'URL of modbus gateway (tcp)'
+          description: 'URL of modbus gateway endpoint'
       valuemaps:
         - uuid: c45cf438ddb541ad907feae60c2d3a5e
           name: '360 airflow'
